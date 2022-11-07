@@ -1,0 +1,64 @@
+﻿<Window x:Class="DiffractionV2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wfc="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
+        xmlns:local="clr-namespace:DiffractionV2"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height ="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TabControl Grid.RowSpan="2">
+            <TabItem Header="Image">
+                <Image x:Name="ImageBox" />
+            </TabItem>
+            <TabItem Header="Chart">
+                <WindowsFormsHost>
+                    <wfc:Chart x:Name="ChartBox"></wfc:Chart>
+                </WindowsFormsHost>
+            </TabItem>
+        </TabControl>
+        <GroupBox Grid.Column="1" Width="300" Header="Light source settings" FontSize="20">
+            <StackPanel>
+                <Label Content="Horizontal position" FontSize="16"></Label>
+                <Slider x:Name="SliderLHP" Maximum="99.99" Minimum="0.01" LargeChange="5" SmallChange="0.01" TickPlacement="BottomRight" TickFrequency="5" Value="50" ValueChanged="Slider_ValueChanged"></Slider>
+                <Label Content="Vertical position" FontSize="16"></Label>
+                <Slider x:Name="SliderLVP" Maximum="99.99" Minimum="0.01" LargeChange="5" SmallChange="0.01" TickPlacement="BottomRight" TickFrequency="5" Value="50" ValueChanged="Slider_ValueChanged"></Slider>
+                <Label Content="Frequency" FontSize="16"></Label>
+                <Slider x:Name="SliderLF" Maximum="800" LargeChange="25" SmallChange="0.01" TickPlacement="BottomRight" TickFrequency="25" Value="550" Minimum="300" ValueChanged="Slider_ValueChanged"></Slider>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Width="300" Grid.Row="1" Header="Environment settings" FontSize="20">
+            <StackPanel>
+                <DockPanel>
+                    <TextBox DockPanel.Dock="Right" Width="60" x:Name="TextBoxAC" TextChanged="TextBox_TextChanged"></TextBox>
+                    <Label Content = "Aperture count" FontSize="16"></Label>
+                </DockPanel>
+                <Slider x:Name="SliderAC" Minimum="1" SmallChange="1" TickPlacement="BottomRight" Value="2" ValueChanged="Slider_ValueChanged"></Slider>
+                <DockPanel>
+                    <TextBox DockPanel.Dock="Right" Width="60" x:Name="TextBoxAW" TextChanged="TextBox_TextChanged"></TextBox>
+                    <Label Content = "Aperture width" FontSize="16"></Label>
+                </DockPanel>
+                <Slider x:Name="SliderAW" SmallChange="0.05" TickPlacement="BottomRight" Value="0.05" ValueChanged="Slider_ValueChanged" Maximum="10" Minimum="0.05" LargeChange="0.25"></Slider>
+                <DockPanel>
+                    <TextBox DockPanel.Dock="Right" Width="60" x:Name="TextBoxAS" TextChanged="TextBox_TextChanged"></TextBox>
+                    <Label Content = "Aperture spacing" FontSize="16"></Label>
+                </DockPanel>
+                <Slider x:Name="SliderAS" SmallChange="0.05" TickPlacement="BottomRight" Value="0.55" ValueChanged="Slider_ValueChanged" LargeChange="0.25" Maximum="10" Minimum="0.05"></Slider>
+                <Label Content = "Distance to screen" FontSize="16"></Label>
+                <Slider x:Name="SliderDtS" Maximum="100" Minimum="1" LargeChange="5" Value="50" TickPlacement="BottomRight" TickFrequency="5" ValueChanged="Slider_ValueChanged"></Slider>
+                <Label Content="Screen sampling" FontSize="16"></Label>
+                <TextBox x:Name="TextBoxSS" Text="500" HorizontalContentAlignment="Center"/>
+                <Button x:Name="ButtonStartStop" Content="Start" Click="ButtonStartStop_Click"></Button>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</Window>
