@@ -10,23 +10,38 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 
-namespace Argon_IdealGasModel
+namespace DiffusionOfNeutrons
 {
     internal class PlotViewModel : INotifyPropertyChanged
     {
 		public PlotModel Model { get; protected set; } = new();
 
-		protected double max = double.NaN;
-		public double Max {
-			get => max;
-			set { max = value; PropChanged(nameof(Max)); }
+		protected double max_X = double.NaN;
+		public double Max_X
+		{
+			get => max_X;
+			set { max_X = value; PropChanged(nameof(Max_X)); }
 		}
 
-		protected double min = double.NaN;
-		public double Min
+		protected double min_X = double.NaN;
+		public double Min_X
 		{
-			get => min;
-			set { min = value; PropChanged(nameof(Min)); }
+			get => min_X;
+			set { min_X = value; PropChanged(nameof(Min_X)); }
+		}
+
+		protected double max_Y = double.NaN;
+		public double Max_Y
+		{
+			get => max_Y;
+			set { max_Y = value; PropChanged(nameof(Max_Y)); }
+		}
+
+		protected double min_Y = double.NaN;
+		public double Min_Y
+		{
+			get => min_Y;
+			set { min_Y = value; PropChanged(nameof(Min_Y)); }
 		}
 
 		protected ObservableCollection<List<DataPoint>> points = new();
@@ -52,13 +67,17 @@ namespace Argon_IdealGasModel
 			switch (e.PropertyName) {
 				case nameof(Points):
 					break;
-				case nameof(Max):
-					foreach (var ax in Model.Axes)
-						ax.Maximum = Max;
+				case nameof(max_X):
+                    Model.Axes[1].Maximum = max_X;
 					return;
-				case nameof(Min):
-					foreach (var ax in Model.Axes)
-						ax.Minimum = Min;
+				case nameof(min_X):
+					Model.Axes[1].Minimum = min_X;
+					return;
+				case nameof(max_Y):
+					Model.Axes[0].Maximum = max_Y;
+					return;
+				case nameof(min_Y):
+					Model.Axes[0].Minimum = min_Y;
 					return;
 				default:
 					return;
@@ -67,8 +86,8 @@ namespace Argon_IdealGasModel
 			points.CollectionChanged += OnCollectionChanged;
 
             Model = new PlotModel();
-            Model.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = min });
-            Model.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0 });
+            Model.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = min_Y, Maximum = max_Y });
+            Model.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = min_X, Maximum = max_X });
 
             foreach (var pts in points) {
                 var s = new LineSeries {
@@ -79,9 +98,10 @@ namespace Argon_IdealGasModel
                 Model.Series.Add(s);
             }
 
-			if (Model.Series.Count > 0) (Model.Series[0] as LineSeries).Color = OxyColors.Blue;
-			if (Model.Series.Count > 1) (Model.Series[1] as LineSeries).Color = OxyColors.Green;
-			if (Model.Series.Count > 2) (Model.Series[2] as LineSeries).Color = OxyColors.Red;
+			if (Model.Series.Count > 0) (Model.Series[0] as LineSeries).Color = OxyColors.Green;
+			if (Model.Series.Count > 1) (Model.Series[1] as LineSeries).Color = OxyColors.Red;
+			if (Model.Series.Count > 2) (Model.Series[2] as LineSeries).Color = OxyColors.Blue;
+			if (Model.Series.Count > 3) (Model.Series[3] as LineSeries).Color = OxyColors.Cyan;
 
 			PropChanged(nameof(Model));
         }
@@ -122,61 +142,5 @@ namespace Argon_IdealGasModel
 			Model.InvalidatePlot(true);
 			PropChanged(nameof(Model));
 		}
-    }
-
-    class PlotViewModelPoints : PlotViewModel
-    {
-		private int pointSize = 0;
-		public int PointSize
-		{
-			get => pointSize;
-			set { pointSize = value; PropChanged(nameof(PointSize)); }
-		}
-		public PlotViewModelPoints()
-		{
-			this.PropertyChanged += OnPropertyChanged;
-
-			Points = new[] { new List<DataPoint>() };
-		}
-
-		protected override void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-			switch (e.PropertyName) {
-				case nameof(Points):
-					break;
-				case nameof(PointSize):
-					foreach (var srs in Model.Series)
-                        if (srs is LineSeries ls)
-                        {
-							ls.MarkerSize = pointSize;
-                        }
-					return;
-				case nameof(Max):
-					foreach (var ax in Model.Axes)
-						ax.Maximum = Max;
-					return;
-				default:
-					return;
-			}
-
-			points.CollectionChanged += OnCollectionChanged;
-
-			Model = new PlotModel();
-            Model.Axes.Add(new LinearAxis { Position = AxisPosition.Left,	Minimum = 0, Maximum = Max });
-            Model.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Maximum = Max });
-
-            var s = new LineSeries {
-                LineStyle = LineStyle.Solid,
-                MarkerType = MarkerType.Circle,
-                MarkerFill = OxyColors.Black,
-                MarkerSize = pointSize,
-                Color = OxyColors.Transparent
-            };
-			if (points.Count == 1 && points[0] is not null)
-				s.Points.AddRange(points[0]);
-            Model.Series.Add(s);
-
-            PropChanged(nameof(Model));
-        }
     }
 }

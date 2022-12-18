@@ -15,6 +15,7 @@ namespace Argon_IdealGasModel.Physics
         public double pressurePlate;
         public ulong count = 0;
         public uint period_PFT = 2000;
+        public uint period_NV = 2000;
         public List<double> Virial = new();
         public List<Atom2d> atoms;
         public List<double> momentums_of_atoms = new();
@@ -24,18 +25,89 @@ namespace Argon_IdealGasModel.Physics
         public List<double> pFromT_verial = new();
         public List<double> pFromT_impact = new();
         const double k = 1.380649e-23;
+
+        public void InitializeModel(int a, int N, double max_v)
+        {
+            bool[,] map = new bool[a, a];
+
+            Random rand = new();
+            atoms = new Atom2d[N].ToList();
+            double vx_total = 0;
+            double vy_total = 0;
+            double atomsVsq10Steps = 0;
+
+            // Создаем атомы со случайными параметрами
+            for (int i = 0; i < N; i++)
+            {
+                double x_map = rand.NextDouble() * a;
+                double y_map = rand.NextDouble() * a;
+
+                while (map[(int)x_map, (int)y_map])
+                {
+                    x_map = rand.NextDouble() * a;
+                    y_map = rand.NextDouble() * a;
+                }
+
+                map[(int)x_map, (int)y_map] = true;
+                double phi = 2 * Math.PI * rand.NextDouble();
+                atoms[i] = new Atom2d
+                {
+                    x = (int)x_map * LennardJonesPotential.r0 + LennardJonesPotential.r0 * 0.5,
+                    y = (int)y_map * LennardJonesPotential.r0 + LennardJonesPotential.r0 * 0.5,
+                    vx = (2 * rand.NextDouble() - 1) * max_v,
+                    vy = (2 * rand.NextDouble() - 1) * max_v
+                };
+                atomsVsq10Steps += atoms[i].getSpeedsq();
+            }
+
+            // Усреднение скорости по температуре
+            double b = Math.Sqrt((2 * T * N * 1.380649e-23) / (atomsVsq10Steps * Atom2d.m));
+            for (int i = 0; i < N; i++)
+            {
+                atoms[i].vx = atoms[i].vx * b;
+                atoms[i].vy = atoms[i].vy * b;
+
+                vx_total += atoms[i].vx;
+                vy_total += atoms[i].vy;
+            }
+
+            // Сохранение импульса
+            vx_total /= N;
+            vy_total /= N;
+
+            Parallel.For(0, N, i =>
+            {
+                atoms[i].vx -= vx_total;
+                atoms[i].vy -= vy_total;
+            });
+
+            Ek.Clear();
+            Ep.Clear();
+            E.Clear();
+            pFromT_verial.Clear();
+            pFromT_impact.Clear();
+            count = 0;
+        }
+
+        /// <summary>
+        /// Один полный шаг моделирования.
+        /// </summary>
         public void Step()
         {
             pressurePlate = 0.5 * L;
             count += 1;
 
+            // Шаг алгоритма Верле
             VerletStep();
 
+            // Расчет энергии
             CulculateEnergy();
 
-            if (count % 10 == 0 && count < period_PFT) 
+            // Нормировка скоростей
+            if (count % 10 == 0 && count < period_NV) 
                 ToAverageSpeed();
 
+            // Расчет давления от температуры 2-мя способами за установленный период
             if (count % period_PFT == 0) {
                 PressureFromTemperature_Verial(period_PFT);
                 PressureFromTemperature_Impact(period_PFT);
@@ -44,7 +116,7 @@ namespace Argon_IdealGasModel.Physics
         }
 
         /// <summary>
-        /// Шаг по алгоритму Верле
+        /// Шаг по алгоритму Верле.
         /// </summary>
         void VerletStep() 
         {
@@ -117,7 +189,7 @@ namespace Argon_IdealGasModel.Physics
         }
 
         /// <summary>
-        /// Усреднение скорости по заданной температуре за 10 шагов
+        /// Усреднение скорости по заданной температуре за установленное число шагов.
         /// </summary>
         void ToAverageSpeed(int steps = 10) 
         {
@@ -140,7 +212,8 @@ namespace Argon_IdealGasModel.Physics
         }
 
         /// <summary>
-        /// Успокоение бешАных атомов
+        /// Успокоение бешАных атомов. При адекватной работе алгоритма данный метод нет смысла использовать.
+        /// При необходимости вызывать в конце метода Step().
         /// </summary>
         void SystemStabilityControl() 
         {
@@ -170,7 +243,7 @@ namespace Argon_IdealGasModel.Physics
         }
 
         /// <summary>
-        /// Расчет энергии
+        /// Расчет энергии (полной E, кинетической Ek и потенциальной Ep).
         /// </summary>
         void CulculateEnergy() 
         {
@@ -193,7 +266,7 @@ namespace Argon_IdealGasModel.Physics
         }
 
         /// <summary>
-        /// Текущая усредненная за несколько шагов температура системы
+        /// Текущая усредненная за несколько шагов температура системы.
         /// </summary>
         /// <param name="steps">количество шагов за которое происходит усреднение</param>
         /// <returns></returns>
@@ -212,7 +285,7 @@ namespace Argon_IdealGasModel.Physics
         }
 
         /// <summary>
-        /// Расчет давления от температуры по теореме вериала
+        /// Расчет давления от температуры по теореме вериала.
         /// </summary>
         void PressureFromTemperature_Verial(uint steps = 500) 
         {
@@ -227,6 +300,10 @@ namespace Argon_IdealGasModel.Physics
             pFromT_verial.Add((T * k * atoms.Count + 0.5 * a / steps) / (L * L));
         }
 
+        /// <summary>
+        /// Расчет давления от температуры по методу импульсов проходящих через элемент поверхности.
+        /// </summary>
+        /// <param name="steps"></param>
         void PressureFromTemperature_Impact(uint steps = 500) 
         {
             double dF = 0;

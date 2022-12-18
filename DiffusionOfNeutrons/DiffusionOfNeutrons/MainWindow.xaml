@@ -1,0 +1,183 @@
+﻿<Window x:Class="DiffusionOfNeutrons.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiffusionOfNeutrons"
+        mc:Ignorable="d"
+        Title="Diffusion of neutrons" WindowState="Maximized">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Image block -->
+        <TabControl Grid.Column ="0" Grid.Row="0">
+            
+            <TabItem Header="Path Model">
+                <local:PlotControl x:Name="ImageBox"/>
+            </TabItem>
+
+            <TabItem Header="Research u(d)">
+                <UniformGrid Columns="2">
+                    <local:PlotControl Grid.Column="0" x:Name="PC_ud1"/>
+                    <local:PlotControl Grid.Column="1" x:Name="PC_ud2"/>
+                </UniformGrid>
+            </TabItem>
+
+            <TabItem Header="Research u(d) linear">
+                <UniformGrid Columns="2">
+                    <local:PlotControl Grid.Column="0" x:Name="PC_ud_l1"/>
+                    <local:PlotControl Grid.Column="1" x:Name="PC_ud_l2"/>
+                </UniformGrid>
+            </TabItem>
+            
+            <TabItem Header="Research u(Pa)">
+                <UniformGrid Columns="2">
+                    <local:PlotControl Grid.Column="0" x:Name="PC_uPa1"/>
+                    <local:PlotControl Grid.Column="1" x:Name="PC_uPa2"/>
+                </UniformGrid>
+            </TabItem>
+            
+        </TabControl>
+
+        <!-- Data block -->
+        <Grid Grid.Column="1" Grid.Row="0">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Параметры моделирования -->
+            <TextBlock  Grid.Row="0" Grid.Column = "0" Text="Параметры моделирования:"          Margin="8, 24, 8, 0" FontSize="20" FontFamily="Comic Sans MS"/>
+            
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="65"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock  Grid.Row="0" Grid.Column = "0" Text="lambda:"                           Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="0" Grid.Column = "1" x:Name="TBox_labda"                      Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="1" Grid.Column = "0" Text="d/lambda:"                         Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="1" Grid.Column = "1" x:Name="TBox_lDd"                        Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="2" Grid.Column = "0" Text="P_поглощения:"                     Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="2" Grid.Column = "1" x:Name="TBox_Pa"                         Margin="8, 8, 8, 0"/>
+            </Grid>
+
+            <!-- Параметры исследования -->
+            <TextBlock  Grid.Row="2" Grid.Column = "0" Text="Параметры исследования:"           Margin="8, 24, 8, 0" FontSize="20" FontFamily="Comic Sans MS"/>
+            
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="65"/>
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                
+                <!-- Основные параметры исследования -->
+                <TextBlock  Grid.Row="0" Grid.Column = "0" Text="Число экспериментов:"              Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="0" Grid.Column = "1" x:Name="TBox_N"                          Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="1" Grid.Column = "0" Text="Число шагов:"                      Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="1" Grid.Column = "1" x:Name="TBox_steps_count"                Margin="8, 8, 8, 0"/>
+
+                <!-- Границы параметров для исследования -->
+                <TextBlock  Grid.Row="2" Grid.Column = "0" Text="Левая граница для d/lambda:"       Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="2" Grid.Column = "1" x:Name="TBox_lDd_lb"                     Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="3" Grid.Column = "0" Text="Правая граница для d/lambda:"      Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="3" Grid.Column = "1" x:Name="TBox_lDd_rb"                     Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="4" Grid.Column = "0" Text="Левая граница для P_поглощения:"   Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="4" Grid.Column = "1" x:Name="TBox_Pa_lb"                      Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="5" Grid.Column = "0" Text="Правая граница для P_поглощения:"  Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="5" Grid.Column = "1" x:Name="TBox_Pa_rb"                      Margin="8, 8, 8, 0"/>
+                
+            </Grid>
+
+            <!-- Результаты вычисления коэффициентов поглощения -->
+            <TextBlock  Grid.Row="4" Grid.Column = "0" Text="Коэффициенты поглощения:"          Margin="8, 24, 8, 0" FontSize="20" FontFamily="Comic Sans MS"/>
+            
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="65"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock  Grid.Row="0" Grid.Column = "0" Text="u(d) m1:"                         Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="0" Grid.Column = "1" x:Name="TBox_m_ul1" IsReadOnly="True"        Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="1" Grid.Column = "0" Text="u(d) m2:"                         Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="1" Grid.Column = "1" x:Name="TBox_m_ul2" IsReadOnly="True"        Margin="8, 8, 8, 0"/>
+            </Grid>
+
+            <!-- Результаты вычисления смешений для аппроксимации -->
+            <TextBlock  Grid.Row="6" Grid.Column = "0" Text="Коэффициенты смещения:"            Margin="8, 24, 8, 0" FontSize="20" FontFamily="Comic Sans MS"/>
+
+            <Grid Grid.Row="7">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="65"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock  Grid.Row="0" Grid.Column = "0" Text="u(d) a1:"                         Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="0" Grid.Column = "1" x:Name="TBox_a_ul1" IsReadOnly="True"   Margin="8, 8, 8, 0"/>
+
+                <TextBlock  Grid.Row="1" Grid.Column = "0" Text="u(d) a2:"                         Margin="8, 8, 8, 0"/>
+                <TextBox    Grid.Row="1" Grid.Column = "1" x:Name="TBox_a_ul2" IsReadOnly="True"   Margin="8, 8, 8, 0"/>
+            </Grid>
+            
+            <!-- Кнопки -->
+            <Grid Grid.Row="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Button Grid.Row="0" x:Name="ButtonDo"       Content="Смоделировать движение"   FontSize="20" FontFamily="Comic Sans MS"  Margin="7,8,8,8" Click="ButtonDo_Click"/>
+                <Button Grid.Row="1" x:Name="ButtonResearch" Content="Провести исследование"    FontSize="20" FontFamily="Comic Sans MS"  Margin="7,8,8,8" Click="ButtonResearch_Click"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
